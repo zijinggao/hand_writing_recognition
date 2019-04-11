@@ -9,38 +9,66 @@
     <link href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
     <style>
+        html,
         body {
-            width: 98%;
-            height: 90%;
+            font-size: 16px;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
         }
-        #canvas{
-            margin: 1em 1em 0 1em;
+
+
+        canvas {
+            border: 1px solid #cccccc;
+            visibility: hidden;
+            display: none;
         }
-        div.continer{
-            margin: 1rem 2rem 0 2rem;
+
+        #cavsElem {
+            visibility: visible;
+            display: inline;
+            box-shadow: 0rem 0rem 5rem 0.05rem rgba(59, 58, 58, 0.5);
         }
+
+        div.continer {
+            margin: 2rem 2rem 2rem 2rem;
+        }
+
+        center{
+            margin-top: 1rem;
+        }
+
+        /* #imgId{
+            width: 28px;
+            height: 28px;
+        } */
     </style>
 </head>
 
 <body>
     <form id="canvas" action="##" method="POST" onsubmit="return false">
         <center id="van">
-            <canvas id="cavsElem" width="300" height="300" style="border: 1px solid black; ">你的浏览器不支持此涂鸦板</canvas>
+            <canvas id="cavsElem" width="300" height="300">你的浏览器不支持此涂鸦板</canvas>
+            <canvas id="cavsElem1" width="300" height="300">你的浏览器不支持此涂鸦板</canvas>
+            <canvas id="cavsElem2" width="28" height="28">你的浏览器不支持此涂鸦板</canvas>
         </center>
 
+
         <div class="weui-cells weui-from">
-                <div class="weui-cell">
-                        <div class="weui-cell__hd"><label class="weui-label">画笔颜色</label></div>
-                        <div class="weui-cell__bd">
-                            <input class="weui-input" id="context.color" type="color">
-                        </div>
+            <!-- <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">画笔颜色</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="context.color" type="color">
                 </div>
-                <div class="weui-cell">
-                        <div class="weui-cell__hd"><label class="weui-label">画笔大小</label></div>
-                        <div class="weui-cell__bd">
-                            <input class="weui-input" id="context.size" type="number" pattern="[0-9]*" placeholder="请输入画笔大小" maxlength="3" value="1">
-                        </div>
+            </div> -->
+            <div class="weui-cell">
+                <div class="weui-cell__hd"><label class="weui-label">画笔大小</label></div>
+                <div class="weui-cell__bd">
+                    <input class="weui-input" id="contextSize" type="number" pattern="[1-9][0-9]|[1-9][0-9][0-9]"
+                        placeholder="请输入画笔大小" maxlength="3" value="20">
                 </div>
+            </div>
         </div>
         <!-- 画笔颜色：<input type="color" id="context.color" /> -->
         <!-- 画笔大小:<input type="number"  max="10" value="1" /> -->
@@ -48,25 +76,41 @@
         <input type="button" value="post" class="weui-btn weui-btn_primary" onclick="get_answer()" />
     </form>
     <div class="continer">
-            <button id="createImg" class="weui-btn weui-btn_primary">点击生成图片预览</button>
-            <img id="imgId" name="images" src="" />
-			<p id="answer">位置在这</p>
+        <button id="reCanvas" class="weui-btn weui-btn_primary">重画</button>
+        <button id="createImg" class="weui-btn weui-btn_primary">点击生成图片预览</button>
+        <img id="imgId" name="images" src="" />
+        <p id="answer">位置在这</p>
     </div>
 
 
 
     <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
-    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <script>
         (function () {
-            var canvas = document.getElementById('cavsElem'); //获得画布
+
+            var screenWidth = window.screen.width;
+
+            var canvas = $('#cavsElem')[0]; //获得画布
+            canvas.width = screenWidth - 32;
+            canvas.height = canvas.width;
             var context = canvas.getContext('2d'); //准备画笔
-            context.fillStyle = "red";
-            context.fillRect(0, 0, context.width, context.height);
-            var a = document.getElementById('context.color');
-            var b = document.getElementById('context.size');
+
+            var canvas1 = $('#cavsElem1')[0]; //获得画布
+            canvas1.width = screenWidth - 32;
+            canvas1.height = canvas.width;
+            var context1 = canvas1.getContext('2d'); //准备画笔
+
+            var canvas2 = $('#cavsElem2')[0]; //获得画布
+            var context2 = canvas2.getContext('2d'); //准备画笔
+
+            //定义固定比例
+            var constScale = 28 / canvas.width;
+
+            var a = '#000'; //$('#context.color');
+            var b = $('#contextSize')[0];
 
             canvas.ontouchstart = function (e) { //鼠标触发onmousedown事件时,获取起始坐标
                 var x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
@@ -77,7 +121,7 @@
                     var x = event.touches[0].clientX - canvas.getBoundingClientRect().left;
                     var y = event.touches[0].clientY - canvas.getBoundingClientRect().top;
                     context.lineTo(x, y); //绘制线条
-                    context.strokeStyle = a.value;
+                    context.strokeStyle = a;
                     context.lineWidth = b.value;
                     context.stroke();
                 };
@@ -86,11 +130,46 @@
                 };
             };
             //生成图片
-            var createImg = document.getElementById("createImg");
+            var createImg = $("#createImg")[0];
             createImg.onclick = function () {
-                document.getElementById("imgId").src = canvas.toDataURL('image/png', 0.5);
+                var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+                // gray filter 
+                for (var i = 0; i < imgData.data.length; i += 4) {
+                    var R = imgData.data[i]; //R(0-255)
+                    var G = imgData.data[i + 1]; //G(0-255)
+                    var B = imgData.data[i + 2]; //G(0-255)
+                    var Alpha = imgData.data[i + 3]; //Alpha(0-255)
+                    //浮点算法
+                    var gray = R * 0.299 + G * 0.587 + B * 0.114;
+                    //整数算法
+                    //  var gray = (R*299 + G*587 + B*114 + 500) / 1000;　
+                    //移位算法
+                    //  var gray =(R*76+G*151+B*28)>>8;
+                    //平均值算法
+                    //   var gray = (R+G+B)/3;
+                    //仅取绿色
+                    //  var gray=G;
+                    imgData.data[i] = gray;
+                    imgData.data[i + 1] = gray;
+                    imgData.data[i + 2] = gray;
+                    imgData.data[i + 3] = Alpha;
+                }
 
+                context1.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height); // at coords 0,0
+                context1.scale(constScale, constScale);
+                context1.globalCompositeOperation = 'copy';
+                context1.drawImage(canvas1, 0, 0);
+
+                var imageData1 = context1.getImageData(0, 0, 28, 28);
+                context2.putImageData(imageData1, 0, 0);
+                $("#imgId")[0].src = canvas2.toDataURL('image/png');
+                console.log(canvas2.toDataURL('image/png'), $("#imgId"));
             }
+
+            //重画
+            $("#reCanvas")[0].onclick = function () {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+            };
 
             canvas.onmousedown = function (e) { //鼠标触发onmousedown事件时,获取起始坐标
                 var x = e.clientX - canvas.getBoundingClientRect().left;
@@ -101,7 +180,7 @@
                     var x = event.clientX - canvas.getBoundingClientRect().left;
                     var y = event.clientY - canvas.getBoundingClientRect().top;
                     context.lineTo(x, y); //绘制线条
-                    context.strokeStyle = a.value;
+                    context.strokeStyle = a;
                     context.lineWidth = b.value;
                     context.stroke();
                 };
@@ -114,30 +193,31 @@
 
         }());
 
-		function get_answer(){
-			//var image = $("#imgId").src;
-            var image = document.getElementById("imgId").src;
-			console.log(image);
-			$.ajax({
-				type: "POST",
-				dataType: "json",
-				url: "/hand",
-				data: {'images':image},
-				success:function(data){
-				    console.log(data.ans);
-					if(typeof(data.ans) === "number"){
-					    console.log("是数字");
-						$("#answer").text("预测结果为数字"+data.ans);
-					}
-					else {
-					    $("#answer").text("数据类型错误");
+        function get_answer() {
+            //var image = $("#imgId").src;
+            var image = $("imgId").src;
+            console.log(image);
+            $.ajax({
+                type: "POST",
+                dataType: "json",
+                url: "/hand",
+                data: {
+                    'images': image
+                },
+                success: function (data) {
+                    console.log(data.ans);
+                    if (typeof (data.ans) === "number") {
+                        console.log("是数字");
+                        $("#answer").text("预测结果为数字" + data.ans);
+                    } else {
+                        $("#answer").text("数据类型错误");
                     }
                 },
-				error: function(data) {
+                error: function (data) {
                     $("#answer").val("error");
                 }
-			})
-		}
+            })
+        }
     </script>
 </body>
 
