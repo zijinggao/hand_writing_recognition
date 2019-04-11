@@ -1,224 +1,262 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>我的画板</title>
-    <link href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css">
+    <link
+      href="https://cdn.bootcss.com/weui/1.1.3/style/weui.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.bootcss.com/jquery-weui/1.2.1/css/jquery-weui.min.css"
+    />
     <style>
-        html,
-        body {
-            font-size: 16px;
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
+      html,
+      body {
+        font-size: 16px;
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+      }
+
+      canvas {
+        border: 1px solid #cccccc;
+        visibility: hidden;
+        display: none;
+      }
+
+      #cavsElem {
+        visibility: visible;
+        display: inline;
+        box-shadow: 0rem 0rem 5rem 0.05rem rgba(59, 58, 58, 0.5);
+      }
+
+      div.continer {
+        margin: 2rem 2rem 2rem 2rem;
+      }
+      @media screen and (max-device-width: 768px) {
+        center {
+          margin: 1rem auto 0;
+          width: 95%;
         }
-
-
-        canvas {
-            border: 1px solid #cccccc;
-            visibility: hidden;
-            display: none;
+      }
+      @media screen and (min-device-width: 769px) {
+        center {
+            margin: 1rem auto 0;
+          width: 60%;
         }
+      }
 
-        #cavsElem {
-            visibility: visible;
-            display: inline;
-            box-shadow: 0rem 0rem 5rem 0.05rem rgba(59, 58, 58, 0.5);
-        }
-
-        div.continer {
-            margin: 2rem 2rem 2rem 2rem;
-        }
-
-        center{
-            margin-top: 1rem;
-        }
-
-        /* #imgId{
+      /* #imgId{
             width: 28px;
             height: 28px;
         } */
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <form id="canvas" action="##" method="POST" onsubmit="return false">
-        <center id="van">
-            <canvas id="cavsElem" width="300" height="300">你的浏览器不支持此涂鸦板</canvas>
-            <canvas id="cavsElem1" width="300" height="300">你的浏览器不支持此涂鸦板</canvas>
-            <canvas id="cavsElem2" width="28" height="28">你的浏览器不支持此涂鸦板</canvas>
-        </center>
-
-
+      <center id="van">
+        <canvas id="cavsElem" width="300" height="300"
+          >你的浏览器不支持此涂鸦板</canvas
+        >
+        <canvas id="cavsElem1" width="300" height="300"
+          >你的浏览器不支持此涂鸦板</canvas
+        >
+        <canvas id="cavsElem2" width="28" height="28"
+          >你的浏览器不支持此涂鸦板</canvas
+        >
         <div class="weui-cells weui-from">
-            <!-- <div class="weui-cell">
-                <div class="weui-cell__hd"><label class="weui-label">画笔颜色</label></div>
-                <div class="weui-cell__bd">
-                    <input class="weui-input" id="context.color" type="color">
-                </div>
-            </div> -->
-            <div class="weui-cell">
-                <div class="weui-cell__hd"><label class="weui-label">画笔大小</label></div>
-                <div class="weui-cell__bd">
-                    <input class="weui-input" id="contextSize" type="number" pattern="[1-9][0-9]|[1-9][0-9][0-9]"
-                        placeholder="请输入画笔大小" maxlength="3" value="20">
-                </div>
+          <!-- <div class="weui-cell">
+                        <div class="weui-cell__hd"><label class="weui-label">画笔颜色</label></div>
+                        <div class="weui-cell__bd">
+                            <input class="weui-input" id="context.color" type="color">
+                        </div>
+                    </div> -->
+          <div class="weui-cell">
+            <div class="weui-cell__hd">
+              <label class="weui-label">画笔大小</label>
             </div>
+            <div class="weui-cell__bd">
+              <input
+                class="weui-input"
+                id="contextSize"
+                type="number"
+                pattern="[1-9][0-9]|[1-9][0-9][0-9]"
+                placeholder="请输入画笔大小"
+                maxlength="3"
+              />
+            </div>
+          </div>
         </div>
-        <!-- 画笔颜色：<input type="color" id="context.color" /> -->
-        <!-- 画笔大小:<input type="number"  max="10" value="1" /> -->
+        <div class="continer">
+          <button class="weui-btn weui-btn_primary" onclick="get_answer()">
+            提交(请点击预览后)
+          </button>
+          <button id="reCanvas" class="weui-btn weui-btn_primary">重画</button>
+          <button id="createImg" class="weui-btn weui-btn_primary">
+            点击生成图片预览
+          </button>
+          <img id="imgId" name="images" src="" />
+          <p id="answer">位置在这</p>
+        </div>
+      </center>
 
-        <input type="button" value="post" class="weui-btn weui-btn_primary" onclick="get_answer()" />
+      <!-- 画笔颜色：<input type="color" id="context.color" /> -->
+      <!-- 画笔大小:<input type="number"  max="10" value="1" /> -->
     </form>
-    <div class="continer">
-        <button id="reCanvas" class="weui-btn weui-btn_primary">重画</button>
-        <button id="createImg" class="weui-btn weui-btn_primary">点击生成图片预览</button>
-        <img id="imgId" name="images" src="" />
-        <p id="answer">位置在这</p>
-    </div>
-
-
 
     <script src="https://cdn.bootcss.com/jquery/1.11.0/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery-weui/1.2.1/js/jquery-weui.min.js"></script>
     <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script>
-        (function () {
+  </body>
+  <script>
+    window.onload = function() {
+      var screenWidth = window.screen.width;
 
-            var screenWidth = window.screen.width;
+      var canvas = $("#cavsElem")[0]; //获得画布
+      canvas.width = screenWidth - 32;
+      canvas.height = canvas.width;
+      var context = canvas.getContext("2d"); //准备画笔
 
-            var canvas = $('#cavsElem')[0]; //获得画布
-            canvas.width = screenWidth - 32;
-            canvas.height = canvas.width;
-            var context = canvas.getContext('2d'); //准备画笔
+      var canvas1 = $("#cavsElem1")[0]; //获得画布
+      canvas1.width = screenWidth - 32;
+      canvas1.height = canvas.width;
+      var context1 = canvas1.getContext("2d"); //准备画笔
 
-            var canvas1 = $('#cavsElem1')[0]; //获得画布
-            canvas1.width = screenWidth - 32;
-            canvas1.height = canvas.width;
-            var context1 = canvas1.getContext('2d'); //准备画笔
+      var canvas2 = $("#cavsElem2")[0]; //获得画布
+      var context2 = canvas2.getContext("2d"); //准备画笔
 
-            var canvas2 = $('#cavsElem2')[0]; //获得画布
-            var context2 = canvas2.getContext('2d'); //准备画笔
+      if (screenWidth >= 768) {
+        canvas.width = 500;
+        canvas.height = 500;
+        canvas1.width = 500;
+        canvas1.height = 500;
+      }
 
-            //定义固定比例
-            var constScale = 28 / canvas.width;
+      //定义固定比例
+      var constScale = 28 / canvas.width;
+      var constContextSizeScale = 1 / 30;
 
-            var a = '#000'; //$('#context.color');
-            var b = $('#contextSize')[0];
+      var a = "#000"; //$('#context.color');
+      var b = $("#contextSize")[0];
+      b.value = parseInt(canvas.width * constContextSizeScale);
 
-            canvas.ontouchstart = function (e) { //鼠标触发onmousedown事件时,获取起始坐标
-                var x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
-                var y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
-                context.beginPath();
-                context.moveTo(x, y);
-                canvas.ontouchmove = function (event) { //触发鼠标移动事件时，获取绘制线条的坐标
-                    var x = event.touches[0].clientX - canvas.getBoundingClientRect().left;
-                    var y = event.touches[0].clientY - canvas.getBoundingClientRect().top;
-                    context.lineTo(x, y); //绘制线条
-                    context.strokeStyle = a;
-                    context.lineWidth = b.value;
-                    context.stroke();
-                };
-                canvas.ontouchend = function (event) { //鼠标被松开时，返回null
-                    canvas.ontouchmove = null;
-                };
-            };
-            //生成图片
-            var createImg = $("#createImg")[0];
-            createImg.onclick = function () {
-                var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-                // gray filter 
-                for (var i = 0; i < imgData.data.length; i += 4) {
-                    var R = imgData.data[i]; //R(0-255)
-                    var G = imgData.data[i + 1]; //G(0-255)
-                    var B = imgData.data[i + 2]; //G(0-255)
-                    var Alpha = imgData.data[i + 3]; //Alpha(0-255)
-                    //浮点算法
-                    var gray = R * 0.299 + G * 0.587 + B * 0.114;
-                    //整数算法
-                    //  var gray = (R*299 + G*587 + B*114 + 500) / 1000;　
-                    //移位算法
-                    //  var gray =(R*76+G*151+B*28)>>8;
-                    //平均值算法
-                    //   var gray = (R+G+B)/3;
-                    //仅取绿色
-                    //  var gray=G;
-                    imgData.data[i] = gray;
-                    imgData.data[i + 1] = gray;
-                    imgData.data[i + 2] = gray;
-                    imgData.data[i + 3] = Alpha;
-                }
-
-                context1.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height); // at coords 0,0
-                context1.scale(constScale, constScale);
-                context1.globalCompositeOperation = 'copy';
-                context1.drawImage(canvas1, 0, 0);
-
-                var imageData1 = context1.getImageData(0, 0, 28, 28);
-                context2.putImageData(imageData1, 0, 0);
-                $("#imgId")[0].src = canvas2.toDataURL('image/png');
-                console.log(canvas2.toDataURL('image/png'), $("#imgId"));
-            }
-
-            //重画
-            $("#reCanvas")[0].onclick = function () {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-            };
-
-            canvas.onmousedown = function (e) { //鼠标触发onmousedown事件时,获取起始坐标
-                var x = e.clientX - canvas.getBoundingClientRect().left;
-                var y = e.clientY - canvas.getBoundingClientRect().top;
-                context.beginPath();
-                context.moveTo(x, y);
-                canvas.onmousemove = function (event) { //触发鼠标移动事件时，获取绘制线条的坐标
-                    var x = event.clientX - canvas.getBoundingClientRect().left;
-                    var y = event.clientY - canvas.getBoundingClientRect().top;
-                    context.lineTo(x, y); //绘制线条
-                    context.strokeStyle = a;
-                    context.lineWidth = b.value;
-                    context.stroke();
-                };
-                canvas.onmouseup = function (event) { //鼠标被松开时，返回null
-                    canvas.onmousemove = null;
-                };
-            };
-
-
-
-        }());
-
-        function get_answer() {
-            //var image = $("#imgId").src;
-            var image = $("imgId").src;
-            console.log(image);
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: "/hand",
-                data: {
-                    'images': image
-                },
-                success: function (data) {
-                    console.log(data.ans);
-                    if (typeof (data.ans) === "number") {
-                        console.log("是数字");
-                        $("#answer").text("预测结果为数字" + data.ans);
-                    } else {
-                        $("#answer").text("数据类型错误");
-                    }
-                },
-                error: function (data) {
-                    $("#answer").val("error");
-                }
-            })
+      canvas.ontouchstart = function(e) {
+        //鼠标触发onmousedown事件时,获取起始坐标
+        var x = e.touches[0].clientX - canvas.getBoundingClientRect().left;
+        var y = e.touches[0].clientY - canvas.getBoundingClientRect().top;
+        context.beginPath();
+        context.moveTo(x, y);
+        canvas.ontouchmove = function(event) {
+          //触发鼠标移动事件时，获取绘制线条的坐标
+          var x =
+            event.touches[0].clientX - canvas.getBoundingClientRect().left;
+          var y = event.touches[0].clientY - canvas.getBoundingClientRect().top;
+          context.lineTo(x, y); //绘制线条
+          context.strokeStyle = a;
+          context.lineWidth = b.value;
+          context.stroke();
+        };
+        canvas.ontouchend = function(event) {
+          //鼠标被松开时，返回null
+          canvas.ontouchmove = null;
+        };
+      };
+      //生成图片
+      var createImg = $("#createImg")[0];
+      createImg.onclick = function() {
+        var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+        // gray filter
+        for (var i = 0; i < imgData.data.length; i += 4) {
+          var R = imgData.data[i]; //R(0-255)
+          var G = imgData.data[i + 1]; //G(0-255)
+          var B = imgData.data[i + 2]; //G(0-255)
+          var Alpha = imgData.data[i + 3]; //Alpha(0-255)
+          //浮点算法
+          var gray = R * 0.299 + G * 0.587 + B * 0.114;
+          //整数算法
+          //  var gray = (R*299 + G*587 + B*114 + 500) / 1000;
+          //移位算法
+          //  var gray =(R*76+G*151+B*28)>>8;
+          //平均值算法
+          //   var gray = (R+G+B)/3;
+          //仅取绿色
+          //  var gray=G;
+          imgData.data[i] = gray;
+          imgData.data[i + 1] = gray;
+          imgData.data[i + 2] = gray;
+          imgData.data[i + 3] = Alpha;
         }
-    </script>
-</body>
 
+        context1.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height); // at coords 0,0
+        context1.scale(constScale, constScale);
+        context1.globalCompositeOperation = "copy";
+        context1.drawImage(canvas1, 0, 0);
+
+        var imageData1 = context1.getImageData(0, 0, 28, 28);
+        context2.putImageData(imageData1, 0, 0);
+        $("#imgId")[0].src = canvas2.toDataURL("image/png");
+        console.log(canvas2.toDataURL("image/png"), $("#imgId"));
+      };
+
+      //重画
+      $("#reCanvas")[0].onclick = function() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      };
+
+      canvas.onmousedown = function(e) {
+        //鼠标触发onmousedown事件时,获取起始坐标
+        var x = e.clientX - canvas.getBoundingClientRect().left;
+        var y = e.clientY - canvas.getBoundingClientRect().top;
+        context.beginPath();
+        context.moveTo(x, y);
+        canvas.onmousemove = function(event) {
+          //触发鼠标移动事件时，获取绘制线条的坐标
+          var x = event.clientX - canvas.getBoundingClientRect().left;
+          var y = event.clientY - canvas.getBoundingClientRect().top;
+          context.lineTo(x, y); //绘制线条
+          context.strokeStyle = a;
+          context.lineWidth = b.value;
+          context.stroke();
+        };
+        canvas.onmouseup = function(event) {
+          //鼠标被松开时，返回null
+          canvas.onmousemove = null;
+        };
+      };
+    };
+
+    function get_answer() {
+      //var image = $("#imgId").src;
+      var image = $("#imgId")[0].src;
+      console.log(image);
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: "/hand",
+        data: {
+          images: image
+        },
+        success: function(data) {
+          console.log(data.ans);
+          if (typeof data.ans === "number") {
+            console.log("是数字");
+            $("#answer").text("预测结果为数字" + data.ans);
+          } else {
+            $("#answer").text("数据类型错误");
+          }
+        },
+        error: function(data) {
+          $("#answer").val("error");
+        }
+      });
+    }
+  </script>
 </html>
