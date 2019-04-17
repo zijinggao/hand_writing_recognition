@@ -168,13 +168,14 @@
           //鼠标被松开时，返回null
           canvas.ontouchmove = null;
         };
+
       };
       //生成图片
       var createImg = $("#createImg")[0];
       createImg.onclick = function() {
         var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
         // gray filter
-        for (var i = 0; i < imgData.data.length; i += 4) {
+        /*for (var i = 0; i < imgData.data.length; i += 4) {
           var R = imgData.data[i]; //R(0-255)
           var G = imgData.data[i + 1]; //G(0-255)
           var B = imgData.data[i + 2]; //G(0-255)
@@ -194,11 +195,13 @@
           imgData.data[i + 2] = gray;
           imgData.data[i + 3] = Alpha;
         }
-
+         */
         context1.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height); // at coords 0,0
+           context1.save();
         context1.scale(constScale, constScale);
         context1.globalCompositeOperation = "copy";
         context1.drawImage(canvas1, 0, 0);
+        context1.restore();
 
         var imageData1 = context1.getImageData(0, 0, 28, 28);
         context2.putImageData(imageData1, 0, 0);
@@ -208,7 +211,8 @@
 
       //重画
       $("#reCanvas")[0].onclick = function() {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+          $("#imgId")[0].src = "";
+          context.clearRect(0, 0, canvas.width, canvas.height);
       };
 
       canvas.onmousedown = function(e) {
@@ -227,8 +231,14 @@
           context.stroke();
         };
         canvas.onmouseup = function(event) {
+
           //鼠标被松开时，返回null
           canvas.onmousemove = null;
+        };
+        canvas.onmouseleave = function() {
+						//鼠标离开画布的时候发生
+            canvas.onmousemove = null;
+
         };
       };
     };

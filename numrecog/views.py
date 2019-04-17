@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-
+from numrecog.DataProcessing import recognize
+import os,base64
 from  . import loadModel
 # Create your views here.
 
@@ -13,6 +14,8 @@ def index(request):
         #img = request.FILES.get('images')
         img = request.POST['images']
         print(img)
-        return JsonResponse({'ans': 1})
-        #num = loadModel.hand_writing_reco()
+        return JsonResponse({'ans':1})
+        # ans = recognize(img)
+        # print(ans)
+        # return JsonResponse({'ans': ans})
 
