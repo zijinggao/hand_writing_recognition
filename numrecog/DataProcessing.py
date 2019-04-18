@@ -3,24 +3,12 @@ import cv2
 import tensorflow as tf
 import numpy as np
 
-def transformData(img):
-    encoded_data = img.split(',')[1]
-    imgData = base64.b64decode(encoded_data)
-    file = open('test.png', 'wb')
-    file.write(imgData)
-    file.close()
-def to8(filename):
-    im = cv2.imread(filename, cv2.IMREAD_UNCHANGED)
-    (R, G, B, A) = cv2.split(im)
-    imgData=[]
-    Data = [0] * 784
-    for i in A:
-        imgData.extend(i)
-    for i in range(len(imgData)):
-        Data[i]=round((imgData[i])/255,7)
-    return Data
-
-
+def convert_png_uri_to_img(uri):
+    encoded_data = uri.split(',')[1]
+    nparr = np.fromstring(base64.b64decode(encoded_data), np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_UNCHANGED)
+    _, _, _, img = cv2.split(img)
+    return img
 
 def usemodel(Data):
 
@@ -37,7 +25,9 @@ def usemodel(Data):
         return np.argmax(scores, 1)[0]
 
 def recognize(img):
-    transformData(img)
-    Data=to8('test.png')
+    im = convert_png_uri_to_img(img) / 255
+    #cv2.imwrite('test.bmp', im)
+    #im = im / 255
+    Data = im.flatten().tolist()
     y=usemodel(Data)
     return int(y)
