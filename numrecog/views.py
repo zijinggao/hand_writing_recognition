@@ -13,9 +13,9 @@ def index(request):
     else:
         #img = request.FILES.get('images')
         img = request.POST['images']
-        print(img)
-        return JsonResponse({'ans':1})
-        # ans = recognize(img)
-        # print(ans)
-        # return JsonResponse({'ans': ans})
+        # print(img)
+        # return JsonResponse({'ans':1})
+        ans = recognize(img)
+        print(ans)
+        return JsonResponse({'ans': ans})
 
