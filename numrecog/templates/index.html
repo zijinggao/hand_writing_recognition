@@ -65,9 +65,7 @@
         <canvas id="cavsElem" width="300" height="300"
           >你的浏览器不支持此涂鸦板</canvas
         >
-        <canvas id="cavsElem1" width="300" height="300"
-          >你的浏览器不支持此涂鸦板</canvas
-        >
+        
         <canvas id="cavsElem2" width="28" height="28"
           >你的浏览器不支持此涂鸦板</canvas
         >
@@ -125,24 +123,17 @@
       canvas.height = canvas.width;
       var context = canvas.getContext("2d"); //准备画笔
 
-      var canvas1 = $("#cavsElem1")[0]; //获得画布
-      canvas1.width = screenWidth - 32;
-      canvas1.height = canvas.width;
-      var context1 = canvas1.getContext("2d"); //准备画笔
-
       var canvas2 = $("#cavsElem2")[0]; //获得画布
       var context2 = canvas2.getContext("2d"); //准备画笔
 
       if (screenWidth >= 768) {
         canvas.width = 500;
         canvas.height = 500;
-        canvas1.width = 500;
-        canvas1.height = 500;
       }
 
       //定义固定比例
       var constScale = 28 / canvas.width;
-      var constContextSizeScale = 1 / 30;
+      var constContextSizeScale = 1 / 15;
 
       var a = "#000"; //$('#context.color');
       var b = $("#contextSize")[0];
@@ -174,37 +165,9 @@
       var createImg = $("#createImg")[0];
       createImg.onclick = function() {
         var imgData = context.getImageData(0, 0, canvas.width, canvas.height);
-        // gray filter
-        /*for (var i = 0; i < imgData.data.length; i += 4) {
-          var R = imgData.data[i]; //R(0-255)
-          var G = imgData.data[i + 1]; //G(0-255)
-          var B = imgData.data[i + 2]; //G(0-255)
-          var Alpha = imgData.data[i + 3]; //Alpha(0-255)
-          //浮点算法
-          var gray = R * 0.299 + G * 0.587 + B * 0.114;
-          //整数算法
-          //  var gray = (R*299 + G*587 + B*114 + 500) / 1000;
-          //移位算法
-          //  var gray =(R*76+G*151+B*28)>>8;
-          //平均值算法
-          //   var gray = (R+G+B)/3;
-          //仅取绿色
-          //  var gray=G;
-          imgData.data[i] = gray;
-          imgData.data[i + 1] = gray;
-          imgData.data[i + 2] = gray;
-          imgData.data[i + 3] = Alpha;
-        }
-         */
-        context1.putImageData(imgData, 0, 0, 0, 0, canvas.width, canvas.height); // at coords 0,0
-           context1.save();
-        context1.scale(constScale, constScale);
-        context1.globalCompositeOperation = "copy";
-        context1.drawImage(canvas1, 0, 0);
-        context1.restore();
-
-        var imageData1 = context1.getImageData(0, 0, 28, 28);
-        context2.putImageData(imageData1, 0, 0);
+        
+        context2.clearRect(0, 0, canvas2.width, canvas2.height);
+        context2.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas2.width, canvas2.height);
         $("#imgId")[0].src = canvas2.toDataURL("image/png");
         console.log(canvas2.toDataURL("image/png"), $("#imgId"));
       };
