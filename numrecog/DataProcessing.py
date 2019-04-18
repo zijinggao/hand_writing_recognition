@@ -4,8 +4,8 @@ import tensorflow as tf
 import numpy as np
 
 def transformData(img):
-    img1=img.replace('data:image/png;base64,','')
-    imgData = base64.b64decode(img1)
+    encoded_data = img.split(',')[1]
+    imgData = base64.b64decode(encoded_data)
     file = open('test.png', 'wb')
     file.write(imgData)
     file.close()
@@ -19,6 +19,8 @@ def to8(filename):
     for i in range(len(imgData)):
         Data[i]=round((imgData[i])/255,7)
     return Data
+
+
 
 def usemodel(Data):
 
@@ -38,4 +40,4 @@ def recognize(img):
     transformData(img)
     Data=to8('test.png')
     y=usemodel(Data)
-    return y
+    return int(y)
