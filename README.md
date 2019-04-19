@@ -4,11 +4,13 @@ Hand writing recogition is a project implemented under django framework. You can
 ## Getting started
 Prerequisites:
 - Your computer must be running Python whose version is greater than 3.6
-- Install django, tensorflow, numpy package
+- Install django, tensorflow, numpy, Pillow, whitenoise package
     ```
     pip install django
     pip install tensorflow
     pip install numpy
+	pip install whitenoise
+	pip install Pillow
     ```
 - Get the code
     ```
